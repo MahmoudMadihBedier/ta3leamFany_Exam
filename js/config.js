@@ -247,7 +247,7 @@ const EXAM_CONFIG = {
 
 // Google Sheets configuration
 const SHEETS_CONFIG = {
-    scriptUrl: "YOUR_GOOGLE_APPS_SCRIPT_URL",
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxrD_lq8gvG7mhRW8PP8ywAxFf6NKpV_b0CFVvfk9Nlf5owflkZ7Hg74s25kmcBroWT/exec",
     sheetName: "ExamResults",
     columns: [
         "Timestamp",
