@@ -2,9 +2,10 @@ class ExamSystem {
     constructor() {
         this.school = new School();
         this.student = new Student();
-        this.exam = new Exam();
+        this.exam = null;
         
         this.initEvents();
+        this.initFormValidation();
     }
 
     initEvents() {
@@ -37,15 +38,28 @@ class ExamSystem {
         });
     }
 
+    initFormValidation() {
+        // Add Bootstrap validation to forms
+        $("form").on("submit", function(e) {
+            if (this.checkValidity() === false) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $(this).addClass("was-validated");
+        });
+        
+        // Clear validation on input
+        $("input").on("input", function() {
+            $(this).removeClass("is-invalid");
+        });
+    }
+
     handleLogin() {
         const code = $("#schoolCode").val().trim();
         
         if (this.school.setCurrentSchool(code)) {
             $("#schoolNameDisplay").val(this.school.getCurrentSchool().name);
-            $("#loginSection").addClass("hidden");
-            $("#studentInfoSection").removeClass("hidden");
-        } else {
-            alert("الرمز السري غير صحيح. الرجاء المحاولة مرة أخرى.");
+            this.switchSection("#loginSection", "#studentInfoSection");
         }
     }
 
@@ -54,44 +68,92 @@ class ExamSystem {
         const className = $("#studentClass").val();
         const school = this.school.getCurrentSchool().name;
         
-        this.student.setInfo(name, className, school);
-        this.startExam();
+        if (this.student.setInfo(name, className, school)) {
+            this.startExam();
+        }
     }
 
     startExam() {
-        $("#studentInfoSection").addClass("hidden");
-        $("#examSection").removeClass("hidden");
+        this.exam = new Exam();
+        this.switchSection("#studentInfoSection", "#examSection");
         this.exam.start();
     }
 
     handleExamSubmission() {
         const score = this.exam.finish();
-        this.submitExamData(score);
+        if (score) {
+            this.submitExamData(score);
+        }
     }
 
     submitExamData(score) {
+        // Show loading state
+        const submitBtn = $("#examForm button[type='submit']");
+        submitBtn.prop("disabled", true).html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري الإرسال...`);
+        
         // Prepare data for submission
         const studentInfo = this.student.getInfo();
         const submissionData = {
-            studentName: studentInfo.name,
-            studentClass: studentInfo.class,
-            schoolName: studentInfo.school,
-            timestamp: studentInfo.timestamp,
-            answers: this.exam.answers.map(answer => answer.answer).join(" | "),
-            score: `${score.score}/${score.total}`,
-            percentage: score.percentage.toFixed(2),
-            passed: score.passed ? "ناجح" : "راسب"
+            Timestamp: studentInfo.timestamp,
+            School: studentInfo.school,
+            "Student Name": studentInfo.name,
+            Class: studentInfo.class,
+            Score: `${score.score}/${score.total}`,
+            Percentage: score.percentage.toFixed(2),
+            Status: score.passed ? "ناجح" : "راسب",
+            Answers: this.exam.answers.map(answer => 
+                `${answer.question}: ${answer.answer} (${answer.isCorrect ? 'صحيح' : 'خطأ'})`
+            ).join(" | ")
         };
 
-        // In a real app, you would send this to Google Sheets here
-        console.log("Data ready for submission:", submissionData);
-        this.showResults(submissionData);
+        // Send data to Google Sheets
+        $.ajax({
+            url: SHEETS_CONFIG.scriptUrl,
+            method: "POST",
+            dataType: "json",
+            data: submissionData,
+            timeout: SHEETS_CONFIG.timeout,
+            success: (response) => {
+                console.log("Data submitted successfully:", response);
+                this.showResults(submissionData, score);
+            },
+            error: (xhr, status, error) => {
+                console.error("Error submitting data:", error);
+                // Show results even if submission fails, but notify user
+                alert("تم حفظ الإجابات محلياً ولكن حدث خطأ في إرسالها إلى السجلات المركزية. الرجاء إبلاغ المسؤول");
+                this.showResults(submissionData, score);
+            }
+        });
     }
 
-    showResults(data) {
-        $("#examSection").addClass("hidden");
-        $("#resultsSection").removeClass("hidden");
-        $("#resultStudentName").text(data.studentName);
+    showResults(data, score) {
+        // Update result details
+        $("#resultStudentName").text(data["Student Name"]);
+        $("#resultSchool").text(data.School);
+        $("#resultClass").text(data.Class);
+        $("#resultScore").text(data.Score);
+        $("#resultPercentage").text(data.Percentage + "%");
+        $("#resultStatus").text(data.Status);
+        
+        // Add pass/fail class
+        const statusElement = $("#resultStatus");
+        if (score.passed) {
+            statusElement.addClass("text-success").removeClass("text-danger");
+        } else {
+            statusElement.addClass("text-danger").removeClass("text-success");
+        }
+        
+        this.switchSection("#examSection", "#resultsSection");
+    }
+
+    switchSection(hideSelector, showSelector) {
+        $(hideSelector).addClass("d-none");
+        $(showSelector).removeClass("d-none");
+        
+        // Scroll to top of new section
+        $("html, body").animate({
+            scrollTop: $(showSelector).offset().top
+        }, 500);
     }
 
     updateProgressBar() {
@@ -99,6 +161,11 @@ class ExamSystem {
         const total = this.exam.questions.length;
         const percentage = (answered / total) * 100;
         $("#progressBar").css("width", percentage + "%");
+        
+        // Hide warning if all questions are answered
+        if (answered === total) {
+            $("#unansweredWarning").addClass("d-none");
+        }
         
         // Change color based on progress
         if (percentage < 30) {

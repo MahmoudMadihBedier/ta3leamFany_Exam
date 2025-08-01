@@ -21,6 +21,7 @@ const SUBJECTS = {
 const EXAM_QUESTIONS = [
     // Arabic Language Questions (5 questions)
     {
+        id: 1,
         type: "multiple_choice",
         subject: SUBJECTS.ARABIC,
         question: "ما نوع الجملة التالية: 'السماء صافية اليوم'؟",
@@ -28,12 +29,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 0
     },
     {
+        id: 2,
         type: "true_false",
         subject: SUBJECTS.ARABIC,
         question: "الفعل 'يذهب' هو فعل مضارع مرفوع.",
         correctAnswer: true
     },
     {
+        id: 3,
         type: "choose_from_list",
         subject: SUBJECTS.ARABIC,
         question: "اختر الكلمة التي تحوي همزة قطع:",
@@ -41,6 +44,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 3
     },
     {
+        id: 4,
         type: "multiple_choice",
         subject: SUBJECTS.ARABIC,
         question: "ما ضد كلمة 'الضيقة'؟",
@@ -48,6 +52,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 0
     },
     {
+        id: 5,
         type: "true_false",
         subject: SUBJECTS.ARABIC,
         question: "الشاعر المتنبي ينتمي إلى العصر الأموي.",
@@ -56,6 +61,7 @@ const EXAM_QUESTIONS = [
 
     // Mathematics Questions (5 questions)
     {
+        id: 6,
         type: "multiple_choice",
         subject: SUBJECTS.MATH,
         question: "ما هو ناتج جمع 3/4 + 1/2؟",
@@ -63,12 +69,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 2
     },
     {
+        id: 7,
         type: "true_false",
         subject: SUBJECTS.MATH,
         question: "المعادلة x² - 5x + 6 = 0 لها جذرين حقيقيين.",
         correctAnswer: true
     },
     {
+        id: 8,
         type: "choose_from_list",
         subject: SUBJECTS.MATH,
         question: "اختر الشكل الذي ليس متعدد السطوح:",
@@ -76,6 +84,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 2
     },
     {
+        id: 9,
         type: "multiple_choice",
         subject: SUBJECTS.MATH,
         question: "ما هو محيط دائرة نصف قطرها 7 سم؟ (ط ≈ 22/7)",
@@ -83,6 +92,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 1
     },
     {
+        id: 10,
         type: "true_false",
         subject: SUBJECTS.MATH,
         question: "اللوغاريتم الطبيعي للعدد 1 يساوي 0.",
@@ -91,6 +101,7 @@ const EXAM_QUESTIONS = [
 
     // Science Questions (5 questions)
     {
+        id: 11,
         type: "multiple_choice",
         subject: SUBJECTS.SCIENCE,
         question: "أي من هذه العناصر هو غاز نبيل؟",
@@ -98,12 +109,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 2
     },
     {
+        id: 12,
         type: "true_false",
         subject: SUBJECTS.SCIENCE,
         question: "الخلايا النباتية تحتوي على جدار خلوي بينما الخلايا الحيوانية لا تحتوي عليه.",
         correctAnswer: true
     },
     {
+        id: 13,
         type: "choose_from_list",
         subject: SUBJECTS.SCIENCE,
         question: "اختر الكوكب الذي يعرف باسم 'الكوكب الأحمر':",
@@ -111,6 +124,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 0
     },
     {
+        id: 14,
         type: "multiple_choice",
         subject: SUBJECTS.SCIENCE,
         question: "ما هي وحدة قياس شدة التيار الكهربائي؟",
@@ -118,6 +132,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 2
     },
     {
+        id: 15,
         type: "true_false",
         subject: SUBJECTS.SCIENCE,
         question: "عملية البناء الضوئي تحدث فقط في أوراق النباتات.",
@@ -126,6 +141,7 @@ const EXAM_QUESTIONS = [
 
     // History Questions (5 questions)
     {
+        id: 16,
         type: "multiple_choice",
         subject: SUBJECTS.HISTORY,
         question: "في أي عام وقعت معركة حطين؟",
@@ -133,12 +149,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 0
     },
     {
+        id: 17,
         type: "true_false",
         subject: SUBJECTS.HISTORY,
         question: "صلاح الدين الأيوبي هو مؤسس الدولة الأيوبية.",
         correctAnswer: true
     },
     {
+        id: 18,
         type: "choose_from_list",
         subject: SUBJECTS.HISTORY,
         question: "اختر الخليفة الذي أنشأ مدينة بغداد:",
@@ -146,6 +164,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 3
     },
     {
+        id: 19,
         type: "multiple_choice",
         subject: SUBJECTS.HISTORY,
         question: "ما هي المعاهدة التي أنهت الحرب العالمية الأولى؟",
@@ -153,6 +172,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 0
     },
     {
+        id: 20,
         type: "true_false",
         subject: SUBJECTS.HISTORY,
         question: "الثورة الصناعية بدأت في فرنسا.",
@@ -161,6 +181,7 @@ const EXAM_QUESTIONS = [
 
     // Geography Questions (5 questions)
     {
+        id: 21,
         type: "multiple_choice",
         subject: SUBJECTS.GEOGRAPHY,
         question: "أي من هذه الدول لا تطل على البحر الأحمر؟",
@@ -168,12 +189,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 3
     },
     {
+        id: 22,
         type: "true_false",
         subject: SUBJECTS.GEOGRAPHY,
         question: "نهر النيل هو أطول نهر في العالم.",
         correctAnswer: true
     },
     {
+        id: 23,
         type: "choose_from_list",
         subject: SUBJECTS.GEOGRAPHY,
         question: "اختر أعلى جبل في العالم:",
@@ -181,6 +204,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 1
     },
     {
+        id: 24,
         type: "multiple_choice",
         subject: SUBJECTS.GEOGRAPHY,
         question: "ما هي عاصمة كندا؟",
@@ -188,6 +212,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 2
     },
     {
+        id: 25,
         type: "true_false",
         subject: SUBJECTS.GEOGRAPHY,
         question: "خط الاستواء يمر عبر دولة السعودية.",
@@ -196,6 +221,7 @@ const EXAM_QUESTIONS = [
 
     // English Language Questions (5 questions)
     {
+        id: 26,
         type: "multiple_choice",
         subject: SUBJECTS.ENGLISH,
         question: "Choose the correct sentence:",
@@ -203,12 +229,14 @@ const EXAM_QUESTIONS = [
         correctAnswer: 1
     },
     {
+        id: 27,
         type: "true_false",
         subject: SUBJECTS.ENGLISH,
         question: "The past tense of 'run' is 'ran'.",
         correctAnswer: true
     },
     {
+        id: 28,
         type: "choose_from_list",
         subject: SUBJECTS.ENGLISH,
         question: "Select the correct spelling:",
@@ -216,6 +244,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 1
     },
     {
+        id: 29,
         type: "multiple_choice",
         subject: SUBJECTS.ENGLISH,
         question: "What is the opposite of 'ancient'?",
@@ -223,6 +252,7 @@ const EXAM_QUESTIONS = [
         correctAnswer: 1
     },
     {
+        id: 30,
         type: "true_false",
         subject: SUBJECTS.ENGLISH,
         question: "'Their', 'there', and 'they're' are pronounced the same but have different meanings.",
@@ -242,12 +272,14 @@ const EXAM_CONFIG = {
         [SUBJECTS.HISTORY]: 0.15,
         [SUBJECTS.GEOGRAPHY]: 0.1,
         [SUBJECTS.ENGLISH]: 0.05
-    }
+    },
+    maxLoginAttempts: 3,
+    warningTime: 300 // 5 minutes in seconds (show warning when time is running out)
 };
 
 // Google Sheets configuration
 const SHEETS_CONFIG = {
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxrD_lq8gvG7mhRW8PP8ywAxFf6NKpV_b0CFVvfk9Nlf5owflkZ7Hg74s25kmcBroWT/exec",
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxINzu3bMn3eOyTLrs_PugTN0Ul4bjLkBXj2BPymyP_CXNlpMz_fW98OQauWV6nu2uU/exec",
     sheetName: "ExamResults",
     columns: [
         "Timestamp",
@@ -258,8 +290,6 @@ const SHEETS_CONFIG = {
         "Percentage",
         "Status",
         "Answers"
-    ]
+    ],
+    timeout: 10000 // 10 seconds timeout for API request
 };
-
-// Export configurations if using modules
-// export { SCHOOL_CODES, EXAM_QUESTIONS, EXAM_CONFIG, SHEETS_CONFIG, SUBJECTS };
