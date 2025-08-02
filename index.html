@@ -3,10 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <title>نظام الاختبارات الإلكترونية</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
-    <!-- Add Tajawal Arabic font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Add viewport meta for responsiveness -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/Style2.css">
@@ -14,11 +12,11 @@
 <body>
 
     <!-- Header with Logo -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="Main_Icon.png" alt="شعار الوزارة" class="logo-header">
-                وزارة التربية والتعليم
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="Main_Icon.png" alt="شعار الوزارة" class="logo-header mr-2">
+                <span>وزارة التربية والتعليم</span>
             </a>
         </div>
     </nav>
@@ -27,21 +25,21 @@
     <section id="loginSection" class="section-with-logo">
         <div class="container">
             <div class="section-header text-center">
-                <img src="Main_Icon.png" class="section-logo" alt="شعار النظام">
-                <h1>مديرية التربية والتعليم بالمنوفية</h1>
-                <p class="section-subtitle">التعليم الفني التجاري</p>
+                <img src="Main_Icon.png" class="section-logo mb-3" alt="شعار النظام">
+                <h1 class="mb-2">مديرية التربية والتعليم بالمنوفية</h1>
+                <p class="section-subtitle text-muted">التعليم الفني التجاري</p>
             </div>
             
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-8">
-                    <div class="official-card">
-                        <div class="official-card-header">
+                    <div class="official-card shadow-lg">
+                        <div class="official-card-header bg-primary text-white">
                             <img src="Main_Icon.png" class="card-logo" alt="شعار البطاقة">
-                            <h3>نظام الاختبارات الإلكترونية</h3>
+                            <h3 class="mb-0">نظام الاختبارات الإلكترونية</h3>
                         </div>
                         <div class="official-card-body">
                             <h4 class="text-center mb-4">سجل الدخول باستخدام الرمز السري للمدرسة</h4>
-                            <form id="loginForm">
+                            <form id="loginForm" novalidate>
                                 <div class="form-group">
                                     <input
                                         id="schoolCode"
@@ -49,14 +47,17 @@
                                         placeholder="أدخل الرمز السري للمدرسة"
                                         class="form-control form-control-lg"
                                         required
+                                        pattern="\d+"
                                     />
+                                    <div class="invalid-feedback">الرجاء إدخال رمز سري صحيح مكون من أرقام فقط</div>
+                                    <div id="attemptsFeedback" class="text-danger small mt-1"></div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg py-3">
                                     دخول <i class="fas fa-sign-in-alt mr-2"></i>
                                 </button>
                             </form>
                         </div>
-                        <div class="official-card-footer">
+                        <div class="official-card-footer bg-light">
                             <img src="Main_Icon.png" class="small-logo" alt="شعار صغير">
                             <span>نظام معتمد من وزارة التربية والتعليم</span>
                         </div>
@@ -67,41 +68,45 @@
     </section>
 
     <!-- Student Info Section -->
-    <section id="studentInfoSection" class="section-with-logo hidden">
+    <section id="studentInfoSection" class="section-with-logo d-none">
         <div class="container">
             <div class="section-header text-center">
-                <img src="Main_Icon.png" class="section-logo" alt="شعار النظام">
-                <h1>تسجيل بيانات الطالب</h1>
-                <p class="section-subtitle">الرجاء إدخال المعلومات المطلوبة</p>
+                <img src="Main_Icon.png" class="section-logo mb-3" alt="شعار النظام">
+                <h1 class="mb-2">تسجيل بيانات الطالب</h1>
+                <p class="section-subtitle text-muted">الرجاء إدخال المعلومات المطلوبة</p>
             </div>
             
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-8">
-                    <div class="official-card">
-                        <div class="official-card-header">
+                    <div class="official-card shadow-lg">
+                        <div class="official-card-header bg-primary text-white">
                             <img src="Main_Icon.png" class="card-logo" alt="شعار البطاقة">
-                            <h3>بيانات الطالب</h3>
+                            <h3 class="mb-0">بيانات الطالب</h3>
                         </div>
                         <div class="official-card-body">
-                            <form id="studentForm">
+                            <form id="studentForm" novalidate>
                                 <div class="form-group">
                                     <label>اسم المدرسة:</label>
                                     <input type="text" class="form-control form-control-lg" id="schoolNameDisplay" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label>اسم الطالب:</label>
-                                    <input type="text" class="form-control form-control-lg" id="studentName" required>
+                                    <input type="text" class="form-control form-control-lg" id="studentName" required
+                                        pattern="[\u0600-\u06FF\s]{2,}(?:\s+[\u0600-\u06FF\s]{2,})+">
+                                    <div class="invalid-feedback">الرجاء إدخال الاسم الكامل للطالب (اسم واسم عائلة على الأقل)</div>
                                 </div>
                                 <div class="form-group">
                                     <label>الصف:</label>
-                                    <input type="text" class="form-control form-control-lg" id="studentClass" required>
+                                    <input type="text" class="form-control form-control-lg" id="studentClass" required
+                                        pattern="[\u0600-\u06FF0-9\s\-]+">
+                                    <div class="invalid-feedback">الرجاء إدخال صف دراسي صحيح</div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg py-3">
                                     بدء الاختبار <i class="fas fa-book-open mr-2"></i>
                                 </button>
                             </form>
                         </div>
-                        <div class="official-card-footer">
+                        <div class="official-card-footer bg-light">
                             <img src="Main_Icon.png" class="small-logo" alt="شعار صغير">
                             <span>جميع الحقوق محفوظة © 2025</span>
                         </div>
@@ -112,41 +117,44 @@
     </section>
 
     <!-- Exam Section -->
-    <section id="examSection" class="section-with-logo hidden">
+    <section id="examSection" class="section-with-logo d-none">
         <div class="container">
             <div class="section-header text-center">
-                <img src="Main_Icon.png" class="section-logo" alt="شعار النظام">
-                <h1>اختبار الطالب الإلكتروني</h1>
-                <p class="section-subtitle">الرجاء الإجابة على جميع الأسئلة</p>
+                <img src="Main_Icon.png" class="section-logo mb-3" alt="شعار النظام">
+                <h1 class="mb-2">اختبار الطالب الإلكتروني</h1>
+                <p class="section-subtitle text-muted">الرجاء الإجابة على جميع الأسئلة</p>
             </div>
             
             <div class="row justify-content-center">
                 <div class="col-12">
-                    <div class="official-exam-card">
-                        <div class="official-exam-header">
+                    <div class="official-exam-card shadow-lg">
+                        <div class="official-exam-header bg-primary text-white">
                             <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <img src="Main_Icon.png" class="exam-logo" alt="شعار الاختبار">
-                                    <h4 id="examTitle">اختبار الطالب</h4>
+                                <div class="d-flex align-items-center">
+                                    <img src="Main_Icon.png" class="exam-logo mr-2" alt="شعار الاختبار">
+                                    <h4 id="examTitle" class="mb-0">اختبار الطالب</h4>
                                 </div>
                                 <div id="timer" class="exam-timer">
                                     <i class="fas fa-clock"></i> الوقت المتبقي: <span>30:00</span>
                                 </div>
                             </div>
-                            <div class="progress">
+                            <div class="progress mt-2" style="height: 10px;">
                                 <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
                             </div>
                         </div>
                         
                         <div class="official-exam-body">
                             <form id="examForm">
-                                <div id="questionsContainer"></div>
+                                <div id="questionsContainer" class="px-3 py-4"></div>
                                 
-                                <div class="exam-submit-section">
-                                    <img src="Main_Icon.png" class="submit-logo" alt="شعار التسليم">
-                                    <button type="submit" class="btn btn-success btn-lg">
+                                <div class="exam-submit-section text-center py-4 border-top">
+                                    <img src="Main_Icon.png" class="submit-logo mb-3" alt="شعار التسليم">
+                                    <button type="submit" class="btn btn-success btn-lg px-5 py-3">
                                         إنهاء الاختبار <i class="fas fa-check-circle mr-2"></i>
                                     </button>
+                                    <div id="unansweredWarning" class="text-danger mt-2 d-none">
+                                        لديك أسئلة بدون إجابة. هل أنت متأكد أنك تريد المتابعة؟
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -157,33 +165,51 @@
     </section>
 
     <!-- Results Section -->
-    <section id="resultsSection" class="section-with-logo hidden">
+    <section id="resultsSection" class="section-with-logo d-none">
         <div class="container">
             <div class="section-header text-center">
-                <img src="Main_Icon.png" class="section-logo" alt="شعار النظام">
-                <h1>نتيجة الاختبار</h1>
-                <p class="section-subtitle">شكراً لمشاركتك في الاختبار</p>
+                <img src="Main_Icon.png" class="section-logo mb-3" alt="شعار النظام">
+                <h1 class="mb-2">نتيجة الاختبار</h1>
+                <p class="section-subtitle text-muted">شكراً لمشاركتك في الاختبار</p>
             </div>
             
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-8">
-                    <div class="official-result-card">
-                        <div class="official-result-header">
+                    <div class="official-result-card shadow-lg">
+                        <div class="official-result-header bg-primary text-white">
                             <img src="Main_Icon.png" class="result-logo" alt="شعار النتيجة">
-                            <h3>تم إرسال الإجابات بنجاح</h3>
+                            <h3 class="mb-0">تم إرسال الإجابات بنجاح</h3>
                         </div>
                         <div class="official-result-body text-center">
-                            <div class="result-icon-container">
+                            <div class="result-icon-container position-relative">
                                 <img src="Main_Icon.png" class="result-watermark" alt="خلفية النتيجة">
-                                <i class="fas fa-check-circle result-icon"></i>
+                                <i class="fas fa-check-circle result-icon text-success"></i>
                             </div>
-                            <h4>شكرا لك، <span id="resultStudentName"></span>!</h4>
-                            <p class="result-message">تم تسجيل إجاباتك بنجاح في سجلات الوزارة.</p>
-                            <button id="restartExam" class="btn btn-primary btn-lg">
+                            <h4 class="mt-4">شكرا لك، <span id="resultStudentName" class="font-weight-bold"></span>!</h4>
+                            <p class="result-message text-muted">تم تسجيل إجاباتك بنجاح في سجلات الوزارة.</p>
+                            <div id="resultDetails" class="my-4 p-3 bg-light rounded">
+                                <div class="row">
+                                    <div class="col-6 text-right">
+                                        <p class="mb-1">المدرسة:</p>
+                                        <p class="mb-1">الصف:</p>
+                                        <p class="mb-1">الدرجة:</p>
+                                        <p class="mb-1">النسبة:</p>
+                                        <p class="mb-0">الحالة:</p>
+                                    </div>
+                                    <div class="col-6 text-left font-weight-bold">
+                                        <p class="mb-1" id="resultSchool"></p>
+                                        <p class="mb-1" id="resultClass"></p>
+                                        <p class="mb-1" id="resultScore"></p>
+                                        <p class="mb-1" id="resultPercentage"></p>
+                                        <p class="mb-0" id="resultStatus"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="restartExam" class="btn btn-primary btn-lg px-5 py-3">
                                 العودة إلى الصفحة الرئيسية <i class="fas fa-home mr-2"></i>
                             </button>
                         </div>
-                        <div class="official-result-footer">
+                        <div class="official-result-footer bg-light">
                             <img src="Main_Icon.png" class="small-logo" alt="شعار صغير">
                             <span>نظام الاختبارات الإلكترونية - وزارة التربية والتعليم</span>
                         </div>
@@ -194,23 +220,23 @@
     </section>
 
     <!-- Official Footer -->
-    <footer class="official-footer">
+    <footer class="official-footer bg-dark text-white py-4">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-md-4 text-center text-md-right">
+                <div class="col-md-4 text-center text-md-right order-md-3">
                     <img src="Main_Icon.png" class="footer-logo" alt="شعار الوزارة">
                 </div>
-                <div class="col-md-4 text-center">
-                    <div class="footer-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
+                <div class="col-md-4 text-center order-md-2">
+                    <div class="footer-links mb-2">
+                        <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white mx-2"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-white mx-2"><i class="fas fa-envelope"></i></a>
                     </div>
-                    <p class="footer-text">تواصل معنا</p>
+                    <p class="footer-text mb-0">تواصل معنا</p>
                 </div>
-                <div class="col-md-4 text-center text-md-left">
-                    <p class="copyright">
+                <div class="col-md-4 text-center text-md-left order-md-1">
+                    <p class="copyright mb-0">
                         <i class="far fa-copyright"></i> 2025 جميع الحقوق محفوظة<br>
                         وزارة التربية والتعليم
                     </p>
