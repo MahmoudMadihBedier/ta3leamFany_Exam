@@ -86,45 +86,84 @@ class ExamSystem {
         }
     }
 
-    submitExamData(score) {
-        // Show loading state
-        const submitBtn = $("#examForm button[type='submit']");
-        submitBtn.prop("disabled", true).html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري الإرسال...`);
-        
-        // Prepare data for submission
-        const studentInfo = this.student.getInfo();
-        const submissionData = {
-            Timestamp: studentInfo.timestamp,
-            School: studentInfo.school,
-            "Student Name": studentInfo.name,
-            Class: studentInfo.class,
-            Score: `${score.score}/${score.total}`,
-            Percentage: score.percentage.toFixed(2),
-            Status: score.passed ? "ناجح" : "راسب",
-            Answers: this.exam.answers.map(answer => 
-                `${answer.question}: ${answer.answer} (${answer.isCorrect ? 'صحيح' : 'خطأ'})`
-            ).join(" | ")
-        };
+async submitExamData(score) {
+  const submitBtn = $("#examForm button[type='submit']");
+  submitBtn.prop("disabled", true).html(
+    `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري الإرسال...`
+  );
 
-        // Send data to Google Sheets
-        $.ajax({
-            url: SHEETS_CONFIG.scriptUrl,
-            method: "POST",
-            dataType: "json",
-            data: submissionData,
-            timeout: SHEETS_CONFIG.timeout,
-            success: (response) => {
-                console.log("Data submitted successfully:", response);
-                this.showResults(submissionData, score);
-            },
-            error: (xhr, status, error) => {
-                console.error("Error submitting data:", error);
-                // Show results even if submission fails, but notify user
-                alert("تم حفظ الإجابات محلياً ولكن حدث خطأ في إرسالها إلى السجلات المركزية. الرجاء إبلاغ المسؤول");
-                this.showResults(submissionData, score);
-            }
-        });
+  const studentInfo = this.student.getInfo();
+  const submissionData = {
+    Timestamp: new Date().toISOString(),
+    School: studentInfo.school,
+    "Student Name": studentInfo.name,
+    Class: studentInfo.class,
+    Score: `${score.score}/${score.total}`,
+    Percentage: score.percentage.toFixed(2),
+    Status: score.passed ? "ناجح" : "راسب",
+    Answers: this.exam.answers.map(a => 
+      `${a.question}: ${a.answer} (${a.isCorrect ? 'صحيح' : 'خطأ'})`
+    ).join(" | ")
+  };
+
+  try {
+    // Create a unique URL to prevent caching
+    const uniqueUrl = `${SHEETS_CONFIG.scriptUrl}?nocache=${Date.now()}`;
+    
+    const response = await fetch(uniqueUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submissionData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    
+    if (data.status === 'error') {
+      throw new Error(data.message || 'Error saving data');
+    }
+
+    console.log('Success:', data);
+    this.showResults(submissionData, score);
+    
+  } catch (error) {
+    console.error('Submission Error:', error);
+    
+    // Show user-friendly error message
+    const errorMessage = `
+      <div class="alert alert-danger mt-3">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        تعذر إرسال النتائج: ${error.message || 'حدث خطأ غير متوقع'}
+        <br><small>سيتم حفظ النتائج محلياً وسيتم إرسالها عند اتصال الإنترنت</small>
+      </div>
+    `;
+    
+    // Store data locally for later submission
+    this.storeLocalSubmission(submissionData);
+    
+    // Show results anyway with warning
+    this.showResults(submissionData, score);
+    $("#resultDetails").after(errorMessage);
+  } finally {
+    submitBtn.prop("disabled", false).html(
+      `إنهاء الاختبار <i class="fas fa-check-circle mr-2"></i>`
+    );
+  }
+}
+storeLocalSubmission(data) {
+  try {
+    const pendingSubmissions = JSON.parse(localStorage.getItem('pendingExamSubmissions') || '[]');
+    pendingSubmissions.push(data);
+    localStorage.setItem('pendingExamSubmissions', JSON.stringify(pendingSubmissions));
+  } catch (e) {
+    console.error('Error storing submission locally:', e);
+  }
+}
 
     showResults(data, score) {
         // Update result details
@@ -181,4 +220,4 @@ class ExamSystem {
 // Initialize the application when DOM is ready
 $(document).ready(() => {
     new ExamSystem();
-});
+});1
