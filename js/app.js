@@ -99,42 +99,65 @@ async submitExamData(score) {
     "Student Name": studentInfo.name,
     Class: studentInfo.class,
     Score: `${score.score}/${score.total}`,
-    Percentage: score.percentage.toFixed(2),
+    Percentage: Number(score.percentage).toFixed(2),
     Status: score.passed ? "ناجح" : "راسب",
-    Answers: this.exam.answers.map(a => 
+    Answers: this.exam.answers.map(a =>
       `${a.question}: ${a.answer} (${a.isCorrect ? 'صحيح' : 'خطأ'})`
     ).join(" | ")
   };
 
+  console.debug("Prepared submissionData:", submissionData);
+
+  // Prepare timeout controller
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), SHEETS_CONFIG.timeout || 10000);
+
   try {
-    // Create a unique URL to prevent caching
     const uniqueUrl = `${SHEETS_CONFIG.scriptUrl}?nocache=${Date.now()}`;
-    
+
+    // Many GAS endpoints expect URL-encoded form params (e.parameter.data).
+    const body = new URLSearchParams({ data: JSON.stringify(submissionData) }).toString();
+
     const response = await fetch(uniqueUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Accept': 'application/json'
       },
-      body: JSON.stringify(submissionData)
+      body,
+      signal: controller.signal,
+      mode: 'cors'
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    
+    const text = await response.text();
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (e) {
+      console.warn("Response is not valid JSON:", text);
+      data = null;
+    }
+
+    if (!data) {
+      throw new Error('Empty or invalid response from server');
+    }
+
     if (data.status === 'error') {
       throw new Error(data.message || 'Error saving data');
     }
 
-    console.log('Success:', data);
+    console.log('Submission success:', data);
     this.showResults(submissionData, score);
-    
+
   } catch (error) {
     console.error('Submission Error:', error);
-    
-    // Show user-friendly error message
+
     const errorMessage = `
       <div class="alert alert-danger mt-3">
         <i class="fas fa-exclamation-triangle mr-2"></i>
@@ -142,14 +165,13 @@ async submitExamData(score) {
         <br><small>سيتم حفظ النتائج محلياً وسيتم إرسالها عند اتصال الإنترنت</small>
       </div>
     `;
-    
-    // Store data locally for later submission
+
     this.storeLocalSubmission(submissionData);
-    
-    // Show results anyway with warning
     this.showResults(submissionData, score);
     $("#resultDetails").after(errorMessage);
+
   } finally {
+    clearTimeout(timeoutId);
     submitBtn.prop("disabled", false).html(
       `إنهاء الاختبار <i class="fas fa-check-circle mr-2"></i>`
     );
@@ -220,4 +242,4 @@ storeLocalSubmission(data) {
 // Initialize the application when DOM is ready
 $(document).ready(() => {
     new ExamSystem();
-});1
+});

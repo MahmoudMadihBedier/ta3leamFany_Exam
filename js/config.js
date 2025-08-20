@@ -9,254 +9,213 @@ const SCHOOL_CODES = {
 
 // Subjects configuration
 const SUBJECTS = {
-    ARABIC: "اللغة العربية",
-    MATH: "الرياضيات",
-    SCIENCE: "العلوم",
-    HISTORY: "التاريخ",
-    GEOGRAPHY: "الجغرافيا",
-    ENGLISH: "اللغة الإنجليزية"
+    PROGRAMMING: "البرمجة",
+    HARDWARE: "مكونات الحاسب",
+    NETWORKS: "الشبكات",
+    DATABASES: "قواعد البيانات",
+    CYBERSECURITY: "الأمن السيبراني"
 };
 
 // Exam questions configuration
 const EXAM_QUESTIONS = [
-    // Arabic Language Questions (5 questions)
+    // Programming (5 questions)
     {
         id: 1,
         type: "multiple_choice",
-        subject: SUBJECTS.ARABIC,
-        question: "ما نوع الجملة التالية: 'السماء صافية اليوم'؟",
-        options: ["جملة اسمية", "جملة فعلية", "جملة شرطية", "جملة استفهامية"],
-        correctAnswer: 0
+        subject: SUBJECTS.PROGRAMMING,
+        question: "أي من اللغات التالية تعتبر لغة برمجة عالية المستوى؟",
+        options: ["Assembly", "C++", "Machine Code", "Binary"],
+        correctAnswer: 1
     },
     {
         id: 2,
         type: "true_false",
-        subject: SUBJECTS.ARABIC,
-        question: "الفعل 'يذهب' هو فعل مضارع مرفوع.",
+        subject: SUBJECTS.PROGRAMMING,
+        question: "لغة Python تُستخدم في الذكاء الاصطناعي وتعلم الآلة.",
         correctAnswer: true
     },
     {
         id: 3,
         type: "choose_from_list",
-        subject: SUBJECTS.ARABIC,
-        question: "اختر الكلمة التي تحوي همزة قطع:",
-        options: ["استمع", "ابن", "امرأة", "اثنان"],
-        correctAnswer: 3
+        subject: SUBJECTS.PROGRAMMING,
+        question: "اختر الكلمة المحجوزة في لغة Java:",
+        options: ["main", "public", "class", "method"],
+        correctAnswer: 2
     },
     {
         id: 4,
         type: "multiple_choice",
-        subject: SUBJECTS.ARABIC,
-        question: "ما ضد كلمة 'الضيقة'؟",
-        options: ["الواسعة", "الصغيرة", "الكبيرة", "الطويلة"],
-        correctAnswer: 0
+        subject: SUBJECTS.PROGRAMMING,
+        question: "ما هو ناتج العملية: 7 % 3 ؟",
+        options: ["1", "2", "3", "4"],
+        correctAnswer: 1
     },
     {
         id: 5,
         type: "true_false",
-        subject: SUBJECTS.ARABIC,
-        question: "الشاعر المتنبي ينتمي إلى العصر الأموي.",
-        correctAnswer: false
+        subject: SUBJECTS.PROGRAMMING,
+        question: "الحلقة for تستخدم للتكرار على عدد محدد من المرات.",
+        correctAnswer: true
     },
 
-    // Mathematics Questions (5 questions)
+    // Hardware (5 questions)
     {
         id: 6,
         type: "multiple_choice",
-        subject: SUBJECTS.MATH,
-        question: "ما هو ناتج جمع 3/4 + 1/2؟",
-        options: ["4/6", "5/4", "1 1/4", "7/8"],
-        correctAnswer: 2
+        subject: SUBJECTS.HARDWARE,
+        question: "أي من التالي يُعتبر وحدة معالجة مركزية (CPU)؟",
+        options: ["Intel Core i7", "NVIDIA RTX 3080", "Samsung SSD", "Corsair RAM"],
+        correctAnswer: 0
     },
     {
         id: 7,
         type: "true_false",
-        subject: SUBJECTS.MATH,
-        question: "المعادلة x² - 5x + 6 = 0 لها جذرين حقيقيين.",
-        correctAnswer: true
+        subject: SUBJECTS.HARDWARE,
+        question: "القرص الصلب (HDD) أسرع من القرص الصلب من نوع SSD.",
+        correctAnswer: false
     },
     {
         id: 8,
         type: "choose_from_list",
-        subject: SUBJECTS.MATH,
-        question: "اختر الشكل الذي ليس متعدد السطوح:",
-        options: ["المكعب", "الهرم", "الكرة", "المنشور"],
-        correctAnswer: 2
+        subject: SUBJECTS.HARDWARE,
+        question: "اختر الجزء المسؤول عن عرض الصور والفيديو:",
+        options: ["CPU", "GPU", "RAM", "PSU"],
+        correctAnswer: 1
     },
     {
         id: 9,
         type: "multiple_choice",
-        subject: SUBJECTS.MATH,
-        question: "ما هو محيط دائرة نصف قطرها 7 سم؟ (ط ≈ 22/7)",
-        options: ["22 سم", "44 سم", "88 سم", "154 سم"],
-        correctAnswer: 1
+        subject: SUBJECTS.HARDWARE,
+        question: "أي من التالي وحدة ذاكرة مؤقتة (Cache Memory)؟",
+        options: ["L1", "USB", "ROM", "BIOS"],
+        correctAnswer: 0
     },
     {
         id: 10,
         type: "true_false",
-        subject: SUBJECTS.MATH,
-        question: "اللوغاريتم الطبيعي للعدد 1 يساوي 0.",
+        subject: SUBJECTS.HARDWARE,
+        question: "ذاكرة RAM تُفقد محتوياتها عند إيقاف تشغيل الجهاز.",
         correctAnswer: true
     },
 
-    // Science Questions (5 questions)
+    // Networks (5 questions)
     {
         id: 11,
         type: "multiple_choice",
-        subject: SUBJECTS.SCIENCE,
-        question: "أي من هذه العناصر هو غاز نبيل؟",
-        options: ["الأكسجين", "الهيدروجين", "النيون", "النيتروجين"],
-        correctAnswer: 2
+        subject: SUBJECTS.NETWORKS,
+        question: "أي من هذه البروتوكولات يُستخدم لتصفح الإنترنت؟",
+        options: ["HTTP", "FTP", "SMTP", "SSH"],
+        correctAnswer: 0
     },
     {
         id: 12,
         type: "true_false",
-        subject: SUBJECTS.SCIENCE,
-        question: "الخلايا النباتية تحتوي على جدار خلوي بينما الخلايا الحيوانية لا تحتوي عليه.",
+        subject: SUBJECTS.NETWORKS,
+        question: "الـ IP Address يُستخدم لتعريف الأجهزة على الشبكة.",
         correctAnswer: true
     },
     {
         id: 13,
         type: "choose_from_list",
-        subject: SUBJECTS.SCIENCE,
-        question: "اختر الكوكب الذي يعرف باسم 'الكوكب الأحمر':",
-        options: ["المريخ", "الزهرة", "المشتري", "زحل"],
-        correctAnswer: 0
+        subject: SUBJECTS.NETWORKS,
+        question: "اختر الطبقة المسؤولة عن التوجيه (Routing) في نموذج OSI:",
+        options: ["Application", "Network", "Transport", "Session"],
+        correctAnswer: 1
     },
     {
         id: 14,
         type: "multiple_choice",
-        subject: SUBJECTS.SCIENCE,
-        question: "ما هي وحدة قياس شدة التيار الكهربائي؟",
-        options: ["الفولت", "الأوم", "الأمبير", "الواط"],
-        correctAnswer: 2
+        subject: SUBJECTS.NETWORKS,
+        question: "ما هو عدد البتات في عنوان IPv4؟",
+        options: ["16", "32", "64", "128"],
+        correctAnswer: 1
     },
     {
         id: 15,
         type: "true_false",
-        subject: SUBJECTS.SCIENCE,
-        question: "عملية البناء الضوئي تحدث فقط في أوراق النباتات.",
-        correctAnswer: false
+        subject: SUBJECTS.NETWORKS,
+        question: "البروتوكول DNS يُستخدم لتحويل أسماء النطاقات إلى عناوين IP.",
+        correctAnswer: true
     },
 
-    // History Questions (5 questions)
+    // Databases (5 questions)
     {
         id: 16,
         type: "multiple_choice",
-        subject: SUBJECTS.HISTORY,
-        question: "في أي عام وقعت معركة حطين؟",
-        options: ["1187 م", "1258 م", "1099 م", "1517 م"],
+        subject: SUBJECTS.DATABASES,
+        question: "أي من التالي يُعتبر نظام إدارة قواعد بيانات؟",
+        options: ["MySQL", "HTML", "CSS", "TCP"],
         correctAnswer: 0
     },
     {
         id: 17,
         type: "true_false",
-        subject: SUBJECTS.HISTORY,
-        question: "صلاح الدين الأيوبي هو مؤسس الدولة الأيوبية.",
+        subject: SUBJECTS.DATABASES,
+        question: "لغة SQL تُستخدم للتعامل مع قواعد البيانات.",
         correctAnswer: true
     },
     {
         id: 18,
         type: "choose_from_list",
-        subject: SUBJECTS.HISTORY,
-        question: "اختر الخليفة الذي أنشأ مدينة بغداد:",
-        options: ["عمر بن الخطاب", "عثمان بن عفان", "هارون الرشيد", "أبو جعفر المنصور"],
-        correctAnswer: 3
+        subject: SUBJECTS.DATABASES,
+        question: "اختر نوع العلاقة بين جدول الطلاب وجدول الفصول:",
+        options: ["One-to-One", "One-to-Many", "Many-to-Many", "None"],
+        correctAnswer: 1
     },
     {
         id: 19,
         type: "multiple_choice",
-        subject: SUBJECTS.HISTORY,
-        question: "ما هي المعاهدة التي أنهت الحرب العالمية الأولى؟",
-        options: ["معاهدة فرساي", "معاهدة سايكس بيكو", "معاهدة وستفاليا", "معاهدة برست ليتوفسك"],
-        correctAnswer: 0
+        subject: SUBJECTS.DATABASES,
+        question: "ما هي الكلمة المفتاحية المستخدمة لاختيار بيانات من جدول؟",
+        options: ["GET", "SELECT", "FIND", "SHOW"],
+        correctAnswer: 1
     },
     {
         id: 20,
         type: "true_false",
-        subject: SUBJECTS.HISTORY,
-        question: "الثورة الصناعية بدأت في فرنسا.",
-        correctAnswer: false
+        subject: SUBJECTS.DATABASES,
+        question: "قاعدة البيانات العلائقية (Relational) تعتمد على الجداول.",
+        correctAnswer: true
     },
 
-    // Geography Questions (5 questions)
+    // Cybersecurity (5 questions)
     {
         id: 21,
         type: "multiple_choice",
-        subject: SUBJECTS.GEOGRAPHY,
-        question: "أي من هذه الدول لا تطل على البحر الأحمر؟",
-        options: ["السعودية", "الأردن", "السودان", "قطر"],
-        correctAnswer: 3
+        subject: SUBJECTS.CYBERSECURITY,
+        question: "أي من التالي يُعتبر نوعًا من الهجمات الإلكترونية؟",
+        options: ["Phishing", "Browsing", "Streaming", "Hosting"],
+        correctAnswer: 0
     },
     {
         id: 22,
         type: "true_false",
-        subject: SUBJECTS.GEOGRAPHY,
-        question: "نهر النيل هو أطول نهر في العالم.",
+        subject: SUBJECTS.CYBERSECURITY,
+        question: "كلمة المرور القوية يجب أن تحتوي على حروف وأرقام ورموز.",
         correctAnswer: true
     },
     {
         id: 23,
         type: "choose_from_list",
-        subject: SUBJECTS.GEOGRAPHY,
-        question: "اختر أعلى جبل في العالم:",
-        options: ["كليمنجارو", "إفرست", "كينابالو", "أكونكاجوا"],
+        subject: SUBJECTS.CYBERSECURITY,
+        question: "اختر الجهاز الذي يُستخدم لحماية الشبكة من الهجمات:",
+        options: ["Router", "Firewall", "Switch", "Hub"],
         correctAnswer: 1
     },
     {
         id: 24,
         type: "multiple_choice",
-        subject: SUBJECTS.GEOGRAPHY,
-        question: "ما هي عاصمة كندا؟",
-        options: ["تورونتو", "فانكوفر", "أوتاوا", "مونتريال"],
-        correctAnswer: 2
+        subject: SUBJECTS.CYBERSECURITY,
+        question: "أي من التالي يُعتبر بروتوكول تشفير؟",
+        options: ["HTTPS", "HTTP", "FTP", "Telnet"],
+        correctAnswer: 0
     },
     {
         id: 25,
         type: "true_false",
-        subject: SUBJECTS.GEOGRAPHY,
-        question: "خط الاستواء يمر عبر دولة السعودية.",
+        subject: SUBJECTS.CYBERSECURITY,
+        question: "الفيروس (Virus) يمكنه الانتشار بدون تدخل المستخدم.",
         correctAnswer: false
-    },
-
-    // English Language Questions (5 questions)
-    {
-        id: 26,
-        type: "multiple_choice",
-        subject: SUBJECTS.ENGLISH,
-        question: "Choose the correct sentence:",
-        options: ["She go to school", "She goes to school", "She going to school", "She is go to school"],
-        correctAnswer: 1
-    },
-    {
-        id: 27,
-        type: "true_false",
-        subject: SUBJECTS.ENGLISH,
-        question: "The past tense of 'run' is 'ran'.",
-        correctAnswer: true
-    },
-    {
-        id: 28,
-        type: "choose_from_list",
-        subject: SUBJECTS.ENGLISH,
-        question: "Select the correct spelling:",
-        options: ["Recieve", "Receive", "Recieve", "Receve"],
-        correctAnswer: 1
-    },
-    {
-        id: 29,
-        type: "multiple_choice",
-        subject: SUBJECTS.ENGLISH,
-        question: "What is the opposite of 'ancient'?",
-        options: ["Old", "Modern", "Historic", "Classic"],
-        correctAnswer: 1
-    },
-    {
-        id: 30,
-        type: "true_false",
-        subject: SUBJECTS.ENGLISH,
-        question: "'Their', 'there', and 'they're' are pronounced the same but have different meanings.",
-        correctAnswer: true
     }
 ];
 
@@ -279,7 +238,7 @@ const EXAM_CONFIG = {
 
 // Google Sheets configuration
 const SHEETS_CONFIG = {
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxbJ-8r5WnYUr-fI7u8c-LFAq-xuKI3bdR9g-rrk0GX4X6Cnk02oOcEzlSRgStvZEdX/exec",
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxFdVx5lMouqvjLGePENcjR4mM2xZFC32J47CTx5_OXimGgY-9Xs7UJ_d_lVgM6elON/exec",
     sheetName: "ExamResults",
     columns: [
         "Timestamp",
