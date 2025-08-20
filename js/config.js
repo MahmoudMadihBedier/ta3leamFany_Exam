@@ -279,7 +279,7 @@ const EXAM_CONFIG = {
 
 // Google Sheets configuration
 const SHEETS_CONFIG = {
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxbJ-8r5WnYUr-fI7u8c-LFAq-xuKI3bdR9g-rrk0GX4X6Cnk02oOcEzlSRgStvZEdX/exec",
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxFdVx5lMouqvjLGePENcjR4mM2xZFC32J47CTx5_OXimGgY-9Xs7UJ_d_lVgM6elON/exec",
     sheetName: "ExamResults",
     columns: [
         "Timestamp",
