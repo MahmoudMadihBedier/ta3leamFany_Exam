@@ -220,4 +220,4 @@ storeLocalSubmission(data) {
 // Initialize the application when DOM is ready
 $(document).ready(() => {
     new ExamSystem();
-});1
+});
