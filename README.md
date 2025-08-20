@@ -1,5 +1,4 @@
-# Ta3leamFanyExam — نظام الاختبارات الإلكترونية
-
+# Ta3leamFanyExam 
 A lightweight client-side web application for delivering timed electronic exams and saving results to a Google Sheets spreadsheet. UI in Arabic. Designed for schools to run timed tests and store results (with offline retry support).
 
 ## Features
