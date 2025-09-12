@@ -72,7 +72,13 @@ class ExamSystem {
         
         // Admin shortcut: go to admin panel
         if (code === ADMIN_CODE) {
+            // mark admin session and open admin
+            sessionStorage.setItem('isAdmin', '1');
             this.switchSection("#loginSection", "#adminSection");
+            // load admin panel results if available
+            if (window.__adminPanel && typeof window.__adminPanel.loadAndRenderResults === 'function') {
+                window.__adminPanel.loadAndRenderResults();
+            }
             return;
         }
         
@@ -340,7 +346,16 @@ storeLocalSubmission(data) {
     }
 }
 
-// Initialize the application when DOM is ready
+// ensure admin auto-open if session exists
 $(document).ready(() => {
+    if (sessionStorage.getItem('isAdmin') === '1') {
+        // show admin if user reloads page
+        $('.section-with-logo').addClass('d-none');
+        $('#adminSection').removeClass('d-none');
+        // init admin panel results if ready
+        if (window.__adminPanel && typeof window.__adminPanel.loadAndRenderResults === 'function') {
+            window.__adminPanel.loadAndRenderResults();
+        }
+    }
     new ExamSystem();
 });

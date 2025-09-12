@@ -232,14 +232,14 @@ const EXAM_QUESTIONS = [
 const EXAM_CONFIG = {
     duration: 1800, // 30 minutes in seconds
     passingScore: 0.6, // 60% required to pass
-    maxQuestions: 30, // Maximum questions to show (random selection)
+    maxQuestions: 25, // Maximum questions to show (random selection) - adjusted
+    // Map weights to the subjects that actually exist in SUBJECTS
     subjectsWeights: {
-        [SUBJECTS.ARABIC]: 0.25,
-        [SUBJECTS.MATH]: 0.25,
-        [SUBJECTS.SCIENCE]: 0.2,
-        [SUBJECTS.HISTORY]: 0.15,
-        [SUBJECTS.GEOGRAPHY]: 0.1,
-        [SUBJECTS.ENGLISH]: 0.05
+        [SUBJECTS.PROGRAMMING]: 0.3,
+        [SUBJECTS.HARDWARE]: 0.2,
+        [SUBJECTS.NETWORKS]: 0.2,
+        [SUBJECTS.DATABASES]: 0.2,
+        [SUBJECTS.CYBERSECURITY]: 0.1
     },
     maxLoginAttempts: 3,
     warningTime: 300 // 5 minutes in seconds (show warning when time is running out)

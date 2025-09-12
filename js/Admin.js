@@ -1,7 +1,8 @@
 class AdminPanel {
     constructor() {
-        this.storageKey = 'savedExamQuestions'; // legacy localStorage key (kept for compatibility)
+        this.storageKey = 'savedExamQuestions';
         this.db = window.__QuestionsDB;
+        this.backend = new BackendService();
         this.init(); // init will handle async steps
     }
 
@@ -29,6 +30,24 @@ class AdminPanel {
         $('#backToLoginFromAdmin').on('click', () => {
             $('.section-with-logo').addClass('d-none');
             $('#loginSection').removeClass('d-none');
+        });
+        $('#syncQuestionsBtn').on('click', () => this.syncLocalQuestionsToServer());
+        $('#refreshResultsBtn').on('click', () => this.loadAndRenderResults());
+        $('#exportResultsBtn').on('click', () => this.exportResultsCSV());
+        $('#resultsSearch').on('input', () => this.filterResults());
+        $('#syncLocalSubmissionsBtn').on('click', async () => {
+            const res = await this.backend.syncPendingSubmissions();
+            alert(`تمت المزامنة: ناجحة ${res.successful}، فاشلة ${res.failed}`);
+            // refresh results after syncing
+            this.loadAndRenderResults();
+        });
+        $('#adminLogoutBtn').on('click', () => {
+            if (confirm('تسجيل خروج المشرف؟')) {
+                sessionStorage.removeItem('isAdmin');
+                // go back to login
+                $('.section-with-logo').addClass('d-none');
+                $('#loginSection').removeClass('d-none');
+            }
         });
 
         // delegate edit/delete clicks
@@ -249,6 +268,151 @@ class AdminPanel {
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
+    }
+
+    // NEW: load results from server and render
+    async loadAndRenderResults() {
+        try {
+            const results = await this.backend.fetchResults();
+            // normalize and cache in memory
+            this._resultsCache = results.map(r => ({
+                timestamp: r.Timestamp || r.Timestamp || '',
+                school: (r.School || r.school || '').toString(),
+                student: (r["Student Name"] || r.student || '').toString(),
+                class: (r.Class || r.class || '').toString(),
+                score: r.Score || '',
+                percentage: Number(r.Percentage || 0),
+                status: r.Status || ''
+            }));
+            this.renderResultsTable(this._resultsCache);
+            this.renderAnalytics(this._resultsCache);
+            // switch to results tab
+            $('#tab-results').tab('show');
+        } catch (err) {
+            console.error('Failed to load results:', err);
+            alert('تعذر جلب النتائج من الخادم. حاول لاحقاً.');
+        }
+    }
+
+    // New: compute and render simple analytics cards
+    renderAnalytics(results) {
+        const container = $('#adminAnalytics');
+        container.empty();
+        if (!results || !results.length) {
+            container.append('<div class="text-muted">لا توجد بيانات إحصائية لعرضها</div>');
+            return;
+        }
+        // overall stats
+        const total = results.length;
+        const avgPercent = (results.reduce((s, r) => s + (Number(r.percentage) || 0), 0) / total) || 0;
+        const passed = results.filter(r => String(r.status).includes('ناج')).length;
+        const failed = total - passed;
+
+        const perSchool = {};
+        results.forEach(r => {
+            const key = r.school || 'غير معروف';
+            const p = Number(r.percentage) || 0;
+            if (!perSchool[key]) perSchool[key] = { count: 0, sum: 0, passed: 0 };
+            perSchool[key].count++;
+            perSchool[key].sum += p;
+            if (String(r.status).includes('ناج')) perSchool[key].passed++;
+        });
+
+        // main cards
+        const cards = [
+            { title: 'إجمالي المحاولات', value: total },
+            { title: 'المعدل العام (%)', value: avgPercent.toFixed(1) },
+            { title: 'ناجحون', value: passed },
+            { title: 'راسبون', value: failed }
+        ];
+
+        cards.forEach(c => {
+            const card = $(`
+              <div class="p-3 mr-2 mb-2 bg-white border rounded" style="min-width:160px">
+                <div class="text-muted small">${c.title}</div>
+                <div class="font-weight-bold h4">${c.value}</div>
+              </div>
+            `);
+            container.append(card);
+        });
+
+        // per-school mini table
+        const schoolDiv = $('<div class="w-100 mt-2"><h6>إحصائيات حسب المدرسة</h6></div>');
+        const table = $('<table class="table table-sm"><thead><tr><th>المدرسة</th><th>محاولات</th><th>متوسط %</th><th>نسبة النجاح</th></tr></thead><tbody></tbody></table>');
+        Object.keys(perSchool).sort().forEach(school => {
+            const info = perSchool[school];
+            const avg = (info.sum / info.count) || 0;
+            const successRate = ((info.passed / info.count) * 100) || 0;
+            table.find('tbody').append(`<tr><td>${school}</td><td>${info.count}</td><td>${avg.toFixed(1)}%</td><td>${successRate.toFixed(0)}%</td></tr>`);
+        });
+        schoolDiv.append(table);
+        container.append(schoolDiv);
+    }
+
+    filterResults() {
+        const q = $('#resultsSearch').val().trim().toLowerCase();
+        if (!this._resultsCache) return;
+        const filtered = this._resultsCache.filter(r =>
+            (r.student || '').toLowerCase().includes(q) ||
+            (r.school || '').toLowerCase().includes(q) ||
+            (r.class || '').toLowerCase().includes(q)
+        );
+        this.renderResultsTable(filtered);
+    }
+
+    exportResultsCSV() {
+        if (!this._resultsCache || !this._resultsCache.length) {
+            alert('لا توجد نتائج للتصدير');
+            return;
+        }
+        const rows = [
+            ['Timestamp','School','Student Name','Class','Score','Percentage','Status'],
+            ...this._resultsCache.map(r => [r.timestamp, r.school, r.student, r.class, r.score, r.percentage, r.status])
+        ];
+        const csv = rows.map(r => r.map(cell => `"${String(cell || '').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `exam_results_${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }
+
+    // NEW: sync local DB questions (created by admin) to server
+    async syncLocalQuestionsToServer() {
+        const dbQs = await this.db.getAll();
+        if (!dbQs.length) {
+            alert('لا توجد أسئلة محلية للمزامنة');
+            return;
+        }
+        let success = 0, failed = 0;
+        for (const q of dbQs) {
+            try {
+                const payload = { action: 'addQuestion', question: q };
+                const body = new URLSearchParams({ data: JSON.stringify(payload) }).toString();
+                const resp = await fetch(`${SHEETS_CONFIG.scriptUrl}?nocache=${Date.now()}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body,
+                    mode: 'cors'
+                });
+                const txt = await resp.text();
+                const json = txt ? JSON.parse(txt) : null;
+                if (json && json.status === 'success') {
+                    success++;
+                } else {
+                    failed++;
+                }
+            } catch (e) {
+                failed++;
+            }
+        }
+        alert(`مزامنة الأسئلة تمت: ناجحة ${success}، فاشلة ${failed}`);
+        // reload server questions into runtime
+        await this.loadAndRender();
     }
 }
 
