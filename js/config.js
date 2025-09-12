@@ -16,6 +16,15 @@ const SUBJECTS = {
     CYBERSECURITY: "الأمن السيبراني"
 };
 
+// Admin code (special user)
+const ADMIN_CODE = "9569633";
+
+// Google Apps Script Web App URL (inserted as requested)
+const SHEETS_CONFIG = {
+    scriptUrl: "https://script.google.com/macros/s/AKfycbx8AGzPo27WQUBYb5vvVnS1MkKEK4hydRkiv1gLQhFwNccZPImsoUCCsUS7Jazpb69_/exec",
+    timeout: 10000 // ms for fetch timeouts / retries
+};
+
 // Exam questions configuration
 const EXAM_QUESTIONS = [
     // Programming (5 questions)
@@ -223,32 +232,15 @@ const EXAM_QUESTIONS = [
 const EXAM_CONFIG = {
     duration: 1800, // 30 minutes in seconds
     passingScore: 0.6, // 60% required to pass
-    maxQuestions: 30, // Maximum questions to show (random selection)
+    maxQuestions: 25, // Maximum questions to show (random selection) - adjusted
+    // Map weights to the subjects that actually exist in SUBJECTS
     subjectsWeights: {
-        [SUBJECTS.ARABIC]: 0.25,
-        [SUBJECTS.MATH]: 0.25,
-        [SUBJECTS.SCIENCE]: 0.2,
-        [SUBJECTS.HISTORY]: 0.15,
-        [SUBJECTS.GEOGRAPHY]: 0.1,
-        [SUBJECTS.ENGLISH]: 0.05
+        [SUBJECTS.PROGRAMMING]: 0.3,
+        [SUBJECTS.HARDWARE]: 0.2,
+        [SUBJECTS.NETWORKS]: 0.2,
+        [SUBJECTS.DATABASES]: 0.2,
+        [SUBJECTS.CYBERSECURITY]: 0.1
     },
     maxLoginAttempts: 3,
     warningTime: 300 // 5 minutes in seconds (show warning when time is running out)
-};
-
-// Google Sheets configuration
-const SHEETS_CONFIG = {
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxFdVx5lMouqvjLGePENcjR4mM2xZFC32J47CTx5_OXimGgY-9Xs7UJ_d_lVgM6elON/exec",
-    sheetName: "ExamResults",
-    columns: [
-        "Timestamp",
-        "School",
-        "Student Name",
-        "Class",
-        "Score",
-        "Percentage",
-        "Status",
-        "Answers"
-    ],
-    timeout: 10000 // 10 seconds timeout for API request
 };

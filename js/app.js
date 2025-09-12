@@ -3,7 +3,20 @@ class ExamSystem {
         this.school = new School();
         this.student = new Student();
         this.exam = null;
-        
+
+        // ensure QuestionsDB is initialized and then load DB questions into runtime
+        if (window.__QuestionsDB) {
+            window.__QuestionsDB.init()
+                .then(() => this.loadSavedQuestions())
+                .catch(e => {
+                    console.warn('QuestionsDB init failed, falling back to localStorage:', e);
+                    this.loadSavedQuestions(); // legacy fallback reads localStorage
+                });
+        } else {
+            // legacy: load from localStorage
+            this.loadSavedQuestions();
+        }
+
         this.initEvents();
         this.initFormValidation();
     }
@@ -57,6 +70,18 @@ class ExamSystem {
     handleLogin() {
         const code = $("#schoolCode").val().trim();
         
+        // Admin shortcut: go to admin panel
+        if (code === ADMIN_CODE) {
+            // mark admin session and open admin
+            sessionStorage.setItem('isAdmin', '1');
+            this.switchSection("#loginSection", "#adminSection");
+            // load admin panel results if available
+            if (window.__adminPanel && typeof window.__adminPanel.loadAndRenderResults === 'function') {
+                window.__adminPanel.loadAndRenderResults();
+            }
+            return;
+        }
+        
         if (this.school.setCurrentSchool(code)) {
             $("#schoolNameDisplay").val(this.school.getCurrentSchool().name);
             this.switchSection("#loginSection", "#studentInfoSection");
@@ -73,10 +98,53 @@ class ExamSystem {
         }
     }
 
-    startExam() {
+    async startExam() {
+        // attempt to fetch latest admin questions from server and merge
+        await this.fetchQuestionsFromServer();
+
         this.exam = new Exam();
         this.switchSection("#studentInfoSection", "#examSection");
         this.exam.start();
+    }
+
+    // Fetch questions from Apps Script (server) and merge into EXAM_QUESTIONS
+    async fetchQuestionsFromServer() {
+        if (!SHEETS_CONFIG || !SHEETS_CONFIG.scriptUrl) return;
+        try {
+            const url = `${SHEETS_CONFIG.scriptUrl}?action=getQuestions&nocache=${Date.now()}`;
+            const resp = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const json = await resp.json();
+            if (json && json.status === 'success' && Array.isArray(json.questions)) {
+                const serverQs = json.questions.map(q => {
+                    return {
+                        id: Number(q.id) || Date.now(),
+                        type: q.type || 'multiple_choice',
+                        subject: q.subject || Object.values(SUBJECTS)[0],
+                        question: q.question || '',
+                        options: q.options || null,
+                        correctAnswer: (typeof q.correctAnswer === 'string' && q.correctAnswer.match(/^(true|false)$/i)) ? (/^true$/i.test(q.correctAnswer)) : (isNaN(Number(q.correctAnswer)) ? q.correctAnswer : Number(q.correctAnswer))
+                    };
+                });
+                // Merge: replace or add
+                serverQs.forEach(sq => {
+                    const idx = EXAM_QUESTIONS.findIndex(x => x.id === sq.id);
+                    if (idx !== -1) {
+                        EXAM_QUESTIONS[idx] = sq;
+                    } else {
+                        EXAM_QUESTIONS.push(sq);
+                    }
+                    // also persist to IndexedDB for offline access
+                    if (window.__QuestionsDB && window.__QuestionsDB.db) {
+                        window.__QuestionsDB.add(sq).catch(()=>{/* ignore duplicates/errors */});
+                    }
+                });
+                console.info('Merged', serverQs.length, 'questions from server');
+            }
+        } catch (err) {
+            console.warn('Failed to fetch questions from server, using local DB:', err);
+            // fallback: QuestionsDB load is already handled at ctor -> nothing to do
+        }
     }
 
     handleExamSubmission() {
@@ -237,9 +305,57 @@ storeLocalSubmission(data) {
             $("#progressBar").removeClass("bg-warning bg-danger").addClass("bg-success");
         }
     }
+
+    // Load saved questions from IndexedDB (added via admin panel) and merge into runtime questions
+    async loadSavedQuestions() {
+        try {
+            if (window.__QuestionsDB && window.__QuestionsDB.db) {
+                const saved = await window.__QuestionsDB.getAll();
+                if (Array.isArray(saved) && saved.length > 0) {
+                    saved.forEach(q => {
+                        if (!EXAM_QUESTIONS.some(existing => existing.id === q.id)) {
+                            EXAM_QUESTIONS.push(q);
+                        } else {
+                            // replace runtime item with DB version
+                            const idx = EXAM_QUESTIONS.findIndex(x => x.id === q.id);
+                            if (idx !== -1) EXAM_QUESTIONS[idx] = q;
+                        }
+                    });
+                    console.info('Loaded saved exam questions from DB:', saved.length);
+                }
+                return;
+            }
+        } catch (e) {
+            console.warn('Failed to load questions from DB:', e);
+        }
+
+        // legacy localStorage fallback
+        try {
+            const saved = JSON.parse(localStorage.getItem('savedExamQuestions') || 'null');
+            if (Array.isArray(saved) && saved.length > 0) {
+                saved.forEach(q => {
+                    if (!EXAM_QUESTIONS.some(existing => existing.id === q.id)) {
+                        EXAM_QUESTIONS.push(q);
+                    }
+                });
+                console.info('Loaded saved exam questions from localStorage:', saved.length);
+            }
+        } catch (e) {
+            console.warn('Failed to load saved questions from localStorage:', e);
+        }
+    }
 }
 
-// Initialize the application when DOM is ready
+// ensure admin auto-open if session exists
 $(document).ready(() => {
+    if (sessionStorage.getItem('isAdmin') === '1') {
+        // show admin if user reloads page
+        $('.section-with-logo').addClass('d-none');
+        $('#adminSection').removeClass('d-none');
+        // init admin panel results if ready
+        if (window.__adminPanel && typeof window.__adminPanel.loadAndRenderResults === 'function') {
+            window.__adminPanel.loadAndRenderResults();
+        }
+    }
     new ExamSystem();
 });
