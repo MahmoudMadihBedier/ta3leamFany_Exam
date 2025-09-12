@@ -252,3 +252,6 @@ const SHEETS_CONFIG = {
     ],
     timeout: 10000 // 10 seconds timeout for API request
 };
+
+// Add admin code (special user who can add questions via admin panel)
+const ADMIN_CODE = "9569633";

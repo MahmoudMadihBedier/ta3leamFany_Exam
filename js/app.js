@@ -3,7 +3,20 @@ class ExamSystem {
         this.school = new School();
         this.student = new Student();
         this.exam = null;
-        
+
+        // ensure QuestionsDB is initialized and then load DB questions into runtime
+        if (window.__QuestionsDB) {
+            window.__QuestionsDB.init()
+                .then(() => this.loadSavedQuestions())
+                .catch(e => {
+                    console.warn('QuestionsDB init failed, falling back to localStorage:', e);
+                    this.loadSavedQuestions(); // legacy fallback reads localStorage
+                });
+        } else {
+            // legacy: load from localStorage
+            this.loadSavedQuestions();
+        }
+
         this.initEvents();
         this.initFormValidation();
     }
@@ -56,6 +69,12 @@ class ExamSystem {
 
     handleLogin() {
         const code = $("#schoolCode").val().trim();
+        
+        // Admin shortcut: go to admin panel
+        if (code === ADMIN_CODE) {
+            this.switchSection("#loginSection", "#adminSection");
+            return;
+        }
         
         if (this.school.setCurrentSchool(code)) {
             $("#schoolNameDisplay").val(this.school.getCurrentSchool().name);
@@ -235,6 +254,45 @@ storeLocalSubmission(data) {
             $("#progressBar").removeClass("bg-success bg-danger").addClass("bg-warning");
         } else {
             $("#progressBar").removeClass("bg-warning bg-danger").addClass("bg-success");
+        }
+    }
+
+    // Load saved questions from IndexedDB (added via admin panel) and merge into runtime questions
+    async loadSavedQuestions() {
+        try {
+            if (window.__QuestionsDB && window.__QuestionsDB.db) {
+                const saved = await window.__QuestionsDB.getAll();
+                if (Array.isArray(saved) && saved.length > 0) {
+                    saved.forEach(q => {
+                        if (!EXAM_QUESTIONS.some(existing => existing.id === q.id)) {
+                            EXAM_QUESTIONS.push(q);
+                        } else {
+                            // replace runtime item with DB version
+                            const idx = EXAM_QUESTIONS.findIndex(x => x.id === q.id);
+                            if (idx !== -1) EXAM_QUESTIONS[idx] = q;
+                        }
+                    });
+                    console.info('Loaded saved exam questions from DB:', saved.length);
+                }
+                return;
+            }
+        } catch (e) {
+            console.warn('Failed to load questions from DB:', e);
+        }
+
+        // legacy localStorage fallback
+        try {
+            const saved = JSON.parse(localStorage.getItem('savedExamQuestions') || 'null');
+            if (Array.isArray(saved) && saved.length > 0) {
+                saved.forEach(q => {
+                    if (!EXAM_QUESTIONS.some(existing => existing.id === q.id)) {
+                        EXAM_QUESTIONS.push(q);
+                    }
+                });
+                console.info('Loaded saved exam questions from localStorage:', saved.length);
+            }
+        } catch (e) {
+            console.warn('Failed to load saved questions from localStorage:', e);
         }
     }
 }
