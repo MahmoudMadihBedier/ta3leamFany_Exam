@@ -16,6 +16,15 @@ const SUBJECTS = {
     CYBERSECURITY: "الأمن السيبراني"
 };
 
+// Admin code (special user)
+const ADMIN_CODE = "9569633";
+
+// Google Apps Script Web App URL (inserted as requested)
+const SHEETS_CONFIG = {
+    scriptUrl: "https://script.google.com/macros/s/AKfycbx8AGzPo27WQUBYb5vvVnS1MkKEK4hydRkiv1gLQhFwNccZPImsoUCCsUS7Jazpb69_/exec",
+    timeout: 10000 // ms for fetch timeouts / retries
+};
+
 // Exam questions configuration
 const EXAM_QUESTIONS = [
     // Programming (5 questions)
@@ -235,23 +244,3 @@ const EXAM_CONFIG = {
     maxLoginAttempts: 3,
     warningTime: 300 // 5 minutes in seconds (show warning when time is running out)
 };
-
-// Google Sheets configuration
-const SHEETS_CONFIG = {
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxFdVx5lMouqvjLGePENcjR4mM2xZFC32J47CTx5_OXimGgY-9Xs7UJ_d_lVgM6elON/exec",
-    sheetName: "ExamResults",
-    columns: [
-        "Timestamp",
-        "School",
-        "Student Name",
-        "Class",
-        "Score",
-        "Percentage",
-        "Status",
-        "Answers"
-    ],
-    timeout: 10000 // 10 seconds timeout for API request
-};
-
-// Add admin code (special user who can add questions via admin panel)
-const ADMIN_CODE = "9569633";

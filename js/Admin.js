@@ -136,17 +136,38 @@ class AdminPanel {
             correctAnswer
         };
 
-        // persist to IndexedDB
-        await this.db.add(newQuestion);
+        // Try to persist to Google Sheets via Apps Script first
+        try {
+            const payload = { action: 'addQuestion', question: newQuestion };
+            const body = new URLSearchParams({ data: JSON.stringify(payload) }).toString();
+            const resp = await fetch(`${SHEETS_CONFIG.scriptUrl}?nocache=${Date.now()}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body,
+                mode: 'cors'
+            });
+            const txt = await resp.text();
+            let json = null;
+            try { json = txt ? JSON.parse(txt) : null; } catch (e) { json = null; }
+            if (!json || json.status !== 'success') {
+                throw new Error((json && json.message) ? json.message : 'فشل حفظ السؤال على الخادم');
+            }
+            // on success persist to IndexedDB and runtime EXAM_QUESTIONS
+            await this.db.add(newQuestion);
+            if (!EXAM_QUESTIONS.some(q => q.id === newQuestion.id)) EXAM_QUESTIONS.push(newQuestion);
 
-        // add to runtime EXAM_QUESTIONS if not present
-        if (!EXAM_QUESTIONS.some(q => q.id === newQuestion.id)) {
-            EXAM_QUESTIONS.push(newQuestion);
+            this.clearForm();
+            await this.loadAndRender();
+            alert('تم إضافة السؤال وحفظه في Google Sheets بنجاح');
+        } catch (err) {
+            // fallback: persist to IndexedDB only
+            console.warn('Sync to server failed, saving locally:', err);
+            await this.db.add(newQuestion);
+            if (!EXAM_QUESTIONS.some(q => q.id === newQuestion.id)) EXAM_QUESTIONS.push(newQuestion);
+            this.clearForm();
+            await this.loadAndRender();
+            alert('تم إضافة السؤال محلياً (تعذر الاتصال بالخادم). سيحاول النظام المزامنة لاحقاً.');
         }
-
-        this.clearForm();
-        await this.loadAndRender();
-        alert('تم إضافة السؤال بنجاح');
     }
 
     async loadAndRender() {

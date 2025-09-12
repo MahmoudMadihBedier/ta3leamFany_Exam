@@ -92,10 +92,53 @@ class ExamSystem {
         }
     }
 
-    startExam() {
+    async startExam() {
+        // attempt to fetch latest admin questions from server and merge
+        await this.fetchQuestionsFromServer();
+
         this.exam = new Exam();
         this.switchSection("#studentInfoSection", "#examSection");
         this.exam.start();
+    }
+
+    // Fetch questions from Apps Script (server) and merge into EXAM_QUESTIONS
+    async fetchQuestionsFromServer() {
+        if (!SHEETS_CONFIG || !SHEETS_CONFIG.scriptUrl) return;
+        try {
+            const url = `${SHEETS_CONFIG.scriptUrl}?action=getQuestions&nocache=${Date.now()}`;
+            const resp = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const json = await resp.json();
+            if (json && json.status === 'success' && Array.isArray(json.questions)) {
+                const serverQs = json.questions.map(q => {
+                    return {
+                        id: Number(q.id) || Date.now(),
+                        type: q.type || 'multiple_choice',
+                        subject: q.subject || Object.values(SUBJECTS)[0],
+                        question: q.question || '',
+                        options: q.options || null,
+                        correctAnswer: (typeof q.correctAnswer === 'string' && q.correctAnswer.match(/^(true|false)$/i)) ? (/^true$/i.test(q.correctAnswer)) : (isNaN(Number(q.correctAnswer)) ? q.correctAnswer : Number(q.correctAnswer))
+                    };
+                });
+                // Merge: replace or add
+                serverQs.forEach(sq => {
+                    const idx = EXAM_QUESTIONS.findIndex(x => x.id === sq.id);
+                    if (idx !== -1) {
+                        EXAM_QUESTIONS[idx] = sq;
+                    } else {
+                        EXAM_QUESTIONS.push(sq);
+                    }
+                    // also persist to IndexedDB for offline access
+                    if (window.__QuestionsDB && window.__QuestionsDB.db) {
+                        window.__QuestionsDB.add(sq).catch(()=>{/* ignore duplicates/errors */});
+                    }
+                });
+                console.info('Merged', serverQs.length, 'questions from server');
+            }
+        } catch (err) {
+            console.warn('Failed to fetch questions from server, using local DB:', err);
+            // fallback: QuestionsDB load is already handled at ctor -> nothing to do
+        }
     }
 
     handleExamSubmission() {
